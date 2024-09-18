@@ -1,0 +1,38 @@
+
+// Created by Cooper Johnston on 1/22/24.
+#include <iostream>
+#include "Token.h"
+#include <fstream>
+#include <sstream>
+#include "Parser.h"
+#include <vector>
+#include "interpreter.h"
+#include "Scanner.h"
+int main(int argc, char *argv[]) {
+    ifstream in;
+    in.open(argv[1]);
+    stringstream ss;
+    ss << in.rdbuf();
+    string input = ss.str();
+    in.close();
+    //cout << "DEBUG: I am in the string" << endl;
+    Scanner s = Scanner(input);
+    s.scanToken();
+    //s.print_tokens();
+    //cout << "BOB" << endl;
+    Parser p = Parser(s.token_lis);
+
+    datalogProgram db = p.parse();
+    interpreter i = interpreter(db);
+    i.evalSchemes();
+    i.evalFacts();
+    //cout << db.to_string() << endl;
+    i.evalSCC(db.rules);
+
+    //cout << "MADE IT" << endl;
+    i.evalQs();
+
+
+    return 0;
+}
+
